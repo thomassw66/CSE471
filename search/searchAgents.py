@@ -295,14 +295,18 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return (self.startingPosition, ())
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        pos, visited = state 
+        for i in range(len(self.corners)):
+            if self.corners[i] not in visited:
+                return False
+        return True
 
     def getSuccessors(self, state):
         """
@@ -314,17 +318,24 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-
+        currentPosition, visited = state 
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
+              x,y = currentPosition
+              dx, dy = Actions.directionToVector(action)
+              nextx, nexty = int(x + dx), int(y + dy)
+              hitsWall = self.walls[nextx][nexty]
+              if not hitsWall:
 
-            "*** YOUR CODE HERE ***"
+                nextPosition = (nextx, nexty)
+                nextVisited = visited 
+                if nextPosition in self.corners and nextPosition not in visited:
+                    vlist = list(visited)
+                    vlist.append(nextPosition)
+                    nextVisited = tuple(vlist)
+                successors.append( ((nextPosition, nextVisited), action, 1) )
 
         self._expanded += 1 # DO NOT CHANGE
         return successors

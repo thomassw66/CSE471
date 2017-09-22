@@ -371,13 +371,49 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    currentPosition, visited = state 
+    path = search.genericGraphSearch(ManhattanTSPOptimizationProblem(currentPosition, visited, problem.corners), util.PriorityQueueWithFunction(lambda n: n.pathcost))
+    path = [currentPosition] + path
+    # print path
+    sum = 0
+    for i in range(1, len(path)):
+        sum += manhattanDistance(path[i-1], path[i])
+    return sum # Default to trivial solution
+
+def manhattanDistance(x, y):
+    return abs(x[0] - y[0]) + abs(x[1] - y[1])     
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
     def __init__(self):
         self.searchFunction = lambda prob: search.aStarSearch(prob, cornersHeuristic)
         self.searchType = CornersProblem
+
+# search through the space of manhattan distances of permutations 
+class ManhattanTSPOptimizationProblem(search.SearchProblem):
+    def __init__(self, current_position, visited, stops):
+        self.startingPosition = current_position
+        self.visited = visited
+        self.stops = stops
+
+    def getStartState(self):
+        return tuple( [self.startingPosition] )
+
+    def isGoalState(self, state):
+        for c in self.stops:
+            if c not in self.visited and c not in state:
+                return False
+        return True
+
+    def getSuccessors(self, state):
+        successors = []
+        for c in self.stops:
+            if c not in self.visited and c not in state:
+                lastPosition = state[-1]
+                newState = tuple(list(state) + [c])
+                successors.append( (newState, c, manhattanDistance(lastPosition, c)) ) 
+        return successors 
+
 
 class FoodSearchProblem:
     """
@@ -465,7 +501,12 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    c = 0
+    for x in foodGrid:
+        for y in x:
+            if y:
+                c += 1
+    return c
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"

@@ -501,12 +501,79 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    c = 0
-    for x in foodGrid:
-        for y in x:
-            if y:
-                c += 1
-    return c
+
+    foods = foodGrid.asList()
+    maxDist = 0
+    minx, miny, maxx, maxy = 10000, 10000, 0, 0
+    for f in foods:
+        minx = min(minx, f[0])
+        miny = min(miny, f[1])
+        maxx = max(maxx, f[0])
+        maxy = max(maxy, f[1])
+        maxDist = max(maxDist, manhattanDistance(position, f))
+
+    h1 = len(foods)
+    h2 = (maxx - minx) + (maxy - miny)
+    h3 = maxDist
+
+    # Generate a graph 
+    # adj = {}
+    # adj[position] = []
+    # for i in range(len(foods)):
+    #     f = foods[i]
+    #     adj[f] = []
+    #     adj[position].append(f)
+    #     for j in range(len(foods)):
+    #         if i != j:
+    #             adj[f].append(foods[j])
+    # w = manhattanDistance
+    # Generate a minimum spanning tree w prims algorithm
+    # return minimum_spanning_tree_cost(Graph(foods + [position], adj), w, position)
+    # after trying this out I soon realized that this does not give a consistent heuristic
+
+    # else:
+        # print max(h1, max(h2, h3))
+    return max(h1, max(h2, h3))
+
+class Graph:
+    vertices = []
+    adj = {}
+
+    def __init__(self, vertices, adj):
+        self.vertices = vertices
+        self.adj = adj
+
+def minimum_spanning_tree_cost(graph, w, root):
+    parent = {} 
+    cost = {}
+    pq = util.PriorityQueue()
+    for vert in graph.vertices:
+        cost[vert] = 1000000
+        pq.push(vert, cost[vert])
+        parent[vert] = None
+    cost[root] = 0
+    pq.update(root, cost[root])
+    while not pq.isEmpty(): 
+        v = pq.pop()
+        for u in graph.adj[v]:
+            # heaps API doesn't give us a good way to do this so were gonna take advantage of 
+            # pythons lack of access control
+            containsu = False 
+            for _,(p, c, i) in enumerate(pq.heap):
+                if i == u:
+                    if  w(v, u) < cost[u]:
+                        cost[u] = w(v, u)
+                        parent[u] = v
+                        pq.update(u, cost[u])
+                        break
+    # calculate total mst cost 
+    sum = 0
+    for vert in graph.vertices:
+        if vert in parent and parent[vert]:
+            p = parent[vert]
+            sum += w(p, v)
+    # print(sum)
+    return sum
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"

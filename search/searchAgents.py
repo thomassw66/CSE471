@@ -556,7 +556,7 @@ def minimum_spanning_tree_cost(graph, w, root):
     while not pq.isEmpty(): 
         v = pq.pop()
         for u in graph.adj[v]:
-            # heaps API doesn't give us a good way to do this so were gonna take advantage of 
+            # heaps API doesn't give us a good way to check if an element is in it so were gonna take advantage of 
             # pythons lack of access control
             containsu = False 
             for _,(p, c, i) in enumerate(pq.heap):
@@ -604,7 +604,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.bfs(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -640,7 +640,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.food[x][y]
 
 def mazeDistance(point1, point2, gameState):
     """

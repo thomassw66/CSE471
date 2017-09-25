@@ -517,23 +517,32 @@ def foodHeuristic(state, problem):
     h3 = maxDist
 
     # Generate a graph 
-    # adj = {}
-    # adj[position] = []
-    # for i in range(len(foods)):
-    #     f = foods[i]
-    #     adj[f] = []
-    #     adj[position].append(f)
-    #     for j in range(len(foods)):
-    #         if i != j:
-    #             adj[f].append(foods[j])
+    adj = {}
+    adj[position] = []
+    for i in range(len(foods)):
+        f = foods[i]
+        adj[f] = [position]
+        adj[position].append(f)
+        for j in range(len(foods)):
+            if i != j:
+                adj[f].append(foods[j])
     # w = manhattanDistance
+    import math
+    # manhattan distance actually makes this heuristic inconssistent * at least as I have it defined
+    w = lambda p1, p2: (math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2))
+    # print adj
     # Generate a minimum spanning tree w prims algorithm
-    # return minimum_spanning_tree_cost(Graph(foods + [position], adj), w, position)
+    h4 = minimum_spanning_tree_cost(Graph(foods + [position], adj), w, position)
+    # h4 = 0
+    # print "n: ", position, " h(n) = ", mst
+    # print mst
+    return max(h4, max(h1, max(h2, h3)))
+
     # after trying this out I soon realized that this does not give a consistent heuristic
 
     # else:
         # print max(h1, max(h2, h3))
-    return max(h1, max(h2, h3))
+    # return max(h1, max(h2, h3))
 
 class Graph:
     vertices = []
@@ -558,7 +567,6 @@ def minimum_spanning_tree_cost(graph, w, root):
         for u in graph.adj[v]:
             # heaps API doesn't give us a good way to check if an element is in it so were gonna take advantage of 
             # pythons lack of access control
-            containsu = False 
             for _,(p, c, i) in enumerate(pq.heap):
                 if i == u:
                     if  w(v, u) < cost[u]:
@@ -567,12 +575,15 @@ def minimum_spanning_tree_cost(graph, w, root):
                         pq.update(u, cost[u])
                         break
     # calculate total mst cost 
+    # print (parent)
     sum = 0
     for vert in graph.vertices:
         if vert in parent and parent[vert]:
             p = parent[vert]
-            sum += w(p, v)
-    # print(sum)
+            # print (vert)
+            # print (p)
+            # print (v)
+            sum += w(p, vert)
     return sum
 
 class ClosestDotSearchAgent(SearchAgent):

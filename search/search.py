@@ -168,8 +168,18 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    return genericGraphSearch(problem, util.PriorityQueueWithFunction(lambda n: heuristic(n.state, problem) + n.pathcost))
+    return genericGraphSearch(problem, util.PriorityQueueWithFunction(pathmax_correction(lambda n: heuristic(n.state, problem) + n.pathcost)))
 
+# Takes an inconsistent heuristic 
+def pathmax_correction(f):
+    memo = {}
+    def helper(n):
+        if n.parent in memo:
+            memo[n] = max(memo[n.parent], f(n))
+        else:
+            memo[n] = f(n)
+        return memo[n]
+    return helper
 
 # Abbreviations
 bfs = breadthFirstSearch

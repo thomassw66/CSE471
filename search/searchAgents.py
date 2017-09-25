@@ -515,6 +515,7 @@ def foodHeuristic(state, problem):
     h1 = len(foods)
     h2 = (maxx - minx) + (maxy - miny)
     h3 = maxDist
+    # Taking the max of these heuristics gets us to 8700
 
     # Generate a graph 
     adj = {}
@@ -533,6 +534,7 @@ def foodHeuristic(state, problem):
     # print adj
     # Generate a minimum spanning tree w prims algorithm
     h4 = minimum_spanning_tree_cost(Graph(foods + [position], adj), w, position)
+    # including this hueristic gets us to 7500
     # h4 = 0
     # print "n: ", position, " h(n) = ", mst
     # print mst

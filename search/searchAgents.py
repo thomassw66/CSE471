@@ -517,6 +517,10 @@ def foodHeuristic(state, problem):
     h3 = maxDist
     # Taking the max of these heuristics gets us to 8700
 
+    # for i in foods:
+    #     for b in foods: 
+    #         if i != b:
+    #             mazeDistance(i, b, )
     # Generate a graph 
     adj = {}
     adj[position] = []
@@ -527,6 +531,13 @@ def foodHeuristic(state, problem):
         for j in range(len(foods)):
             if i != j:
                 adj[f].append(foods[j])
+
+
+    # getWalls
+    # getPacmanPosition
+    # 
+
+    # get
     # w = manhattanDistance
     import math
     # manhattan distance actually makes this heuristic inconssistent * at least as I have it defined

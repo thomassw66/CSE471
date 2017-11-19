@@ -47,13 +47,42 @@ def enhancedFeatureExtractor(datum):
 
     ## DESCRIBE YOUR ENHANCED FEATURES HERE...
 
+        find the connected regions of contigous white pixels and count them
     ##
     """
     features = basicFeatureExtractor(datum)
 
     "*** YOUR CODE HERE ***"
     #util.raiseNotDefined()
+    binarized = np.zeros_like(datum, dtype=int)
+    binarized[datum > 0] = 1
 
+    def inside(array, x, y):
+        return x >= 0 and y >= 0 and x < len(array) and y < len(array[x]) 
+
+    def floodfill(datum, colors, x, y, color):
+        if not inside(datum, x, y):
+            return
+        elif (colors[x][y] == 0):
+            colors[x][y] = color 
+            points = [(x-1, y), (x+1, y), (x, y-1), (x, y+1)]
+            for xi, yi in points:
+                if inside(datum, xi, yi):
+                    if colors[xi][yi] == 0 and binarized[x][y] == binarized[xi][yi]:
+                        floodfill(datum, colors, xi, yi, color)
+
+    c = 0
+    colors = np.zeros_like(datum);
+    for i in range(len(colors)):
+        for j in range(len(colors[i])):
+            if (colors[i][j] == 0):
+                c = c + 1 
+                floodfill(datum, colors, i, j, c)
+                
+    extra_features = [ 1 if c == i else 0 for i in range(5)]
+    # print extra_features
+    # print c
+    features = np.append(features, extra_features)
     return features
 
 

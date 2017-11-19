@@ -52,7 +52,7 @@ def enhancedFeatureExtractor(datum):
     features = basicFeatureExtractor(datum)
 
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    #util.raiseNotDefined()
 
     return features
 

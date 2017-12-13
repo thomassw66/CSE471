@@ -269,10 +269,10 @@ class StochasticGradientDescentSolver(GradientDescentSolver):
         train_data = [input_train_data, target_train_data]
         val_data = [input_val_data, target_val_data]
         # You may want to initialize some variables that are shared across iterations
-        input_train_gen = MinibatchIndefinitelyGenerator(np.transpose(input_train_data), 1, True)
-        target_train_gen = MinibatchIndefinitelyGenerator(np.transpose(target_train_data), 1, True)
-        input_val_gen = MinibatchIndefinitelyGenerator(np.transpose(input_val_data), 1, True)
-        target_val_gen = MinibatchIndefinitelyGenerator(np.transpose(target_val_data), 1, True)
+        input_train_gen = MinibatchIndefinitelyGenerator([input_train_data], 1, True)
+        target_train_gen = MinibatchIndefinitelyGenerator([target_train_data], 1, True)
+        input_val_gen = MinibatchIndefinitelyGenerator([input_val_data], 1, True)
+        target_val_gen = MinibatchIndefinitelyGenerator([target_val_data], 1, True)
         "*** YOUR CODE HERE ***"
         loss_tensor = self.get_loss_tensor(model.prediction_tensor, target_ph, model.get_param_vars(regularizable=True))
         updates = self.get_updates(loss_tensor, model.get_param_vars(trainable=True))
@@ -282,15 +282,19 @@ class StochasticGradientDescentSolver(GradientDescentSolver):
         for iter_ in range(self.iterations):
             # train_loss should be the loss of this iteration using only the training data that was used for the updates
             # val_loss should be the loss of this iteration using the same amount of data used for the updates, but using the validation data instead
-            input_train_batch = np.transpose(input_train_gen.next())
-            target_train_batch = np.transpose(target_train_gen.next())
-            train_loss = session.run(loss_tensor, feed_dict={placeholders[0]: input_train_batch, placeholders[1]: target_train_batch})
-            session.run(update_ops, feed_dict={placeholders[0]: input_train_batch, placeholders[1]: target_train_batch})
+            input_train_batch = input_train_gen.next()
+            target_train_batch = target_train_gen.next()
+            input_train_batch = list(input_train_batch)
+            target_train_batch = list(target_train_batch)
+            train_loss = session.run(loss_tensor, feed_dict={placeholders[0]: input_train_batch[0], placeholders[1]: target_train_batch[0]})
+            session.run(update_ops, feed_dict={placeholders[0]: input_train_batch[0], placeholders[1]: target_train_batch[0]})
             train_losses.append(train_loss)
 
-            input_val_batch = np.transpose(input_val_gen.next())
-            target_val_batch = np.transpose(target_val_gen.next())
-            val_loss = session.run(loss_tensor, feed_dict={placeholders[0]: input_val_batch, placeholders[1]: target_val_batch})
+            input_val_batch = input_val_gen.next()
+            target_val_batch = target_val_gen.next()
+            input_val_batch = list(input_val_batch)
+            target_val_batch = list(target_val_batch)
+            val_loss = session.run(loss_tensor, feed_dict={placeholders[0]: input_val_batch[0], placeholders[1]: target_val_batch[0]})
             val_losses.append(val_loss)
             if callback is not None: callback(model)
             self.display_progress(iter_, train_losses, val_losses)
@@ -371,10 +375,10 @@ class MinibatchStochasticGradientDescentSolver(GradientDescentSolver):
         train_data = [input_train_data, target_train_data]
         val_data = [input_val_data, target_val_data]
         # You may want to initialize some variables that are shared across iterations
-        input_train_gen = MinibatchIndefinitelyGenerator(np.transpose(input_train_data), self.batch_size, True)
-        target_train_gen = MinibatchIndefinitelyGenerator(np.transpose(target_train_data), self.batch_size, True)
-        input_val_gen = MinibatchIndefinitelyGenerator(np.transpose(input_val_data), self.batch_size, True)
-        target_val_gen = MinibatchIndefinitelyGenerator(np.transpose(target_val_data), self.batch_size, True)
+        input_train_gen = MinibatchIndefinitelyGenerator([input_train_data], self.batch_size, True)
+        target_train_gen = MinibatchIndefinitelyGenerator([target_train_data], self.batch_size, True)
+        input_val_gen = MinibatchIndefinitelyGenerator([input_val_data], self.batch_size, True)
+        target_val_gen = MinibatchIndefinitelyGenerator([target_val_data], self.batch_size, True)
         "*** YOUR CODE HERE ***"
         loss_tensor = self.get_loss_tensor(model.prediction_tensor, target_ph, model.get_param_vars(regularizable=True))
         updates = self.get_updates(loss_tensor, model.get_param_vars(trainable=True))
@@ -385,15 +389,19 @@ class MinibatchStochasticGradientDescentSolver(GradientDescentSolver):
             "*** YOUR CODE HERE ***"
             # train_loss should be the loss of this iteration using only the training data that was used for the updates
             # val_loss should be the loss of this iteration using the same amount of data used for the updates, but using the validation data instead
-            input_train_batch = np.transpose(input_train_gen.next())
-            target_train_batch = np.transpose(target_train_gen.next())
-            train_loss = session.run(loss_tensor, feed_dict={placeholders[0]: input_train_batch, placeholders[1]: target_train_batch})
-            session.run(update_ops, feed_dict={placeholders[0]: input_train_batch, placeholders[1]: target_train_batch})
+            input_train_batch = input_train_gen.next()
+            target_train_batch = target_train_gen.next()
+            input_train_batch = list(input_train_batch)
+            target_train_batch = list(target_train_batch)
+            train_loss = session.run(loss_tensor, feed_dict={placeholders[0]: input_train_batch[0], placeholders[1]: target_train_batch[0]})
+            session.run(update_ops, feed_dict={placeholders[0]: input_train_batch[0], placeholders[1]: target_train_batch[0]})
             train_losses.append(train_loss)
 
-            input_val_batch = np.transpose(input_val_gen.next())
-            target_val_batch = np.transpose(target_val_gen.next())
-            val_loss = session.run(loss_tensor, feed_dict={placeholders[0]: input_val_batch, placeholders[1]: target_val_batch})
+            input_val_batch = input_val_gen.next()
+            target_val_batch = target_val_gen.next()
+            input_val_batch = list(input_val_batch)
+            target_val_batch = list(target_val_batch)
+            val_loss = session.run(loss_tensor, feed_dict={placeholders[0]: input_val_batch[0], placeholders[1]: target_val_batch[0]})
             val_losses.append(val_loss)
             if callback is not None: callback(model)
             self.display_progress(iter_, train_losses, val_losses)

@@ -1,0 +1,19 @@
+url: my.asu.edu
+Server: cloudflare-nginx
+address: 104.16.51.14
+
+url: myasucourses.blackboard.com / myasucourses.asu.edu
+address: 69.196.227.193
+server: server line not found :/
+
+devops requirements : :-)
+java / scala dev
+docker 
+
+IT Sr. Analyst reqs: :-) 
+experience testing in : oracle fusion, workday, peoplesoft, salesforce, SAP, or other
+hands on oracle db or ms-sql 
+
+
+looks like theyre loading the content with ajax :/ might make scraping more complicated
+

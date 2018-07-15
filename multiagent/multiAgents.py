@@ -92,7 +92,7 @@ class ReflexAgent(Agent):
             # g = max(g, 1.0 / d)
             g = 0
 
-        return successorGameState.getScore() + t + -1.0 * g
+        return successorGameState.getScore() + t 
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -165,7 +165,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
     def multiAgentSearch(self, state, agentIndex, depth):
       if self.isTerminal(state):
         return state.getScore()
-
+      print "minimax"
       n = state.getNumAgents()
 
       nextAgent = (agentIndex + 1) % n
@@ -182,7 +182,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
           val, action = min(zip(values, actions), key=lambda item: item[0])
           return val
       else:
-        return state.getScore()
+        actions = state.getLegalActions(agentIndex)
+        return max( [self.evaluationFunction(state, a) for a in actions] )
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -194,6 +195,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
+        print "alpha beta"
         actions = gameState.getLegalActions(0)
         v = -float("inf")
         act = None 
@@ -235,7 +237,11 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
       for a in actions:
         r = state.generateSuccessor(agent_index, a) 
 
-        v = max(v, self.value(r, alpha, beta, (agent_index + 1) % state.getNumAgents(), depth + 1 if agent_index == 0 else depth))
+        if depth + 1 > self.depth: 
+          v = self.evaluationFunction(state, a)
+        else:
+          v = max(v, self.value(r, alpha, beta, (agent_index + 1) % state.getNumAgents(), depth + 1 if agent_index == 0 else depth))
+
         if v > beta: return v 
         alpha = max(alpha, v)
       # print v
@@ -280,15 +286,22 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         return act
 
     def value(self, state, agent_index, depth):
+      # print "expecitmax"
       if self.isTerminal(state): return state.getScore()
       d = depth + 1 if agent_index == 0 else depth 
-      if d > self.depth: return state.getScore()
+      # if d > self.depth: return state.getScore()
       if agent_index == 0: return self.maxValue(state, agent_index, depth)
       else: return self.expectiValue(state, agent_index, depth)
 
     def maxValue(self, state, agent_index, depth):
       v = -float("inf")
       actions = state.getLegalActions(agent_index)
+
+      if depth > self.depth and agent_index == 0:
+        e = [self.evaluationFunction(state, a) for a in actions]
+        print e 
+        return e
+
       for a in actions:
         r = state.generateSuccessor(agent_index, a) 
         v = max(v, self.value(r, (agent_index + 1) % state.getNumAgents(), depth + 1 if agent_index == 0 else depth))
@@ -314,18 +327,25 @@ def betterEvaluationFunction(currentGameState):
 
       DESCRIPTION: <write something here so we know what you did>
     """
+    print "Gello World"
     "*** YOUR CODE HERE ***"
-    newPos = currentGameState.getPacmanPosition()
-    newFood = currentGameState.getFood()
-    newGhostStates = currentGameState.getGhostStates()
-    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+    # the score 
+    score = currentGameState.getScore()
+    # Legal moves
+    legalMoves = gameState.getLegalActions()
+    numLegalMoves = len(legalMoves)
 
-    n = len(newFood.asList())
-    x, y = newPos
-    mind = float("inf")
-    maxd = -float("inf") 
-    for fx, fy in newFood.asList():
-      d = abs(x - fx) + abs(y - fy) + 1
+    position = currentGameState.getPacmanPosition()
+    food = currentGameState.getFood()
+    ghostStates = currentGameState.getGhostStates()
+
+    totalDotDistance = 0
+    largestDotDistance = -float("inf")
+    closestDotDistance = float("inf")
+
+    x, y = position 
+    for fx, fy in food.asList():
+      d = abs(x - fx) + abs(y - fy) 
       mind = min(mind, d)
       maxd = max(maxd, d)
     
@@ -334,8 +354,8 @@ def betterEvaluationFunction(currentGameState):
       gx, gy = gstate.getPosition()
       d = abs(x - gx) + abs(y - gy)
       g = min(g, d)
-
-    return currentGameState.getScore() + n + 1.0 / (maxd + 0.01) + 1.0 / (mind + 0.01) + -1.0 / (g + 0.01)
+    print ("pussy")
+    return  -1.0 
 
 # Abbreviation
 better = betterEvaluationFunction
